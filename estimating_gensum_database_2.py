@@ -34,13 +34,13 @@ def get_download_path():
 
 def master_program():
 
-    #get user download directory on windows computer
+    # GET PATH: users download directory on windows computer
     download_path = get_download_path()
     
-    #CREATE PATH: creats folder path of default download path with default folder where gensum file data is to be extracted from is to be placed
+    # CREATE PATH: creats folder path of default download path with default folder where gensum file data is to be extracted from is to be placed
     project_setup_directory= download_path +r'\_02-estimating_gensum_database'
     
-    #CREATE PATH:Creates folder path with a name of the time program was ran
+    # CREATE PATH:Creates folder path with a name of the time program was ran
     time_now = datetime.datetime.now()
     current_time =str(time_now)[0:19].replace(":","-")
     print(current_time)
@@ -60,15 +60,36 @@ def master_program():
     
     # OPEN FILE: gensumw
     try:
-        open_wb=openpyxl.load_workbook(gensum_run_path,data_only=True)
+        wb_exist_gensum=openpyxl.load_workbook(gensum_run_path,data_only=True)
+    except:
+        print("Error when opening workbook.\nTry deleting all other worksheets in excel document and resaving file.\nIf still does not work contact: Jonathancascioli@gmail.com")
+    else:
+        print("workbooko successfully imported.")
 
-
-    for sheet in open_wb:
-        print(sheet.title)
-
-
+    print("The following worksheets are in the excel document.")
+    for sheet in wb_exist_gensum:
+       print(sheet.title)
+    
+    worksheet_open_question=input("Which worksheet would you like to open?:\n")
+    
+    try:
+        ws = wb_exist_gensum[worksheet_open_question]
+    except:
+        print("That Worksheet does not exist")
+    else:
+        return
+    
+    # CREATE EXCEL: document to place extracted data into
+    create_wb=openpyxl.Workbook()
+    
     # CREATE PATH: path to use for resulting file of program
     gensum_prj_file = prj_folder+ r"\\"+current_time+"__-__gensum.xlsx"
+
+    # SAVE EXCEL: save excel file to path location
+    create_wb.save(gensum_prj_file)
+
+    #Write cell with value of stop at the bottom of the 
+    # Pull project information from top of sheet and 
 
     #####ENTER PROJECT INFORMATION INTO BRS WORKSHEET#####
     ws_p_info = wb_brs.worksheets[0]
