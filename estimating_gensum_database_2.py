@@ -58,38 +58,87 @@ def master_program():
     # CREATE PATH: Location of file that data is extracted from 
     gensum_run_path=project_setup_directory +r'\gensum_run.xlsx'
     
-    # OPEN FILE: gensumw
+    # OPEN FILE: gensum_run to extract info from
     try:
         wb_exist_gensum=openpyxl.load_workbook(gensum_run_path,data_only=True)
     except:
-        print("Error when opening workbook.\nTry deleting all other worksheets in excel document and resaving file.\nIf still does not work contact: Jonathancascioli@gmail.com")
+        print("Error when opening workbook.\nTry deleting all other worksheets in excel document and resaving file.\nMake sure file is in correct location and named 'gensum_run.xlsx'\nIf still does not work contact: Jonathancascioli@gmail.com")
     else:
-        print("workbooko successfully imported.")
+        print("workbook successfully imported.")
 
+    # TELL USER: what worksheets are in excel document
     print("The following worksheets are in the excel document.")
+    
     for sheet in wb_exist_gensum:
        print(sheet.title)
     
+    # INPUT: Ask user which worksheet he wants to open
     worksheet_open_question=input("Which worksheet would you like to open?:\n")
     
+    # TRY: To open user input worksheet
     try:
         ws = wb_exist_gensum[worksheet_open_question]
     except:
-        print("That Worksheet does not exist")
+        print("That Worksheet does not exist\n")
     else:
-        return
+        print("Worksheet successfully opened\n")
     
+    #FIND CELL: Find cell with "start" in it to set the beginning of a range to pull data from
+    for row in ws.iter_rows():
+        for cell in row:
+            if cell.value =="START":
+                start_loc=cell.coordinate
+                start_offset=ws[start_loc].offset(1,0).coordinate
+    print("Start Location:"+start_loc+"\n")
+    print("Start offset:"+start_offset+"\n")
+
+    #FIND CELL: Find cell with "STOP" in it to set the end of a range to pull data from
+    for row in ws.iter_rows():
+        for cell in row:
+            if cell.value == "STOP":
+                stop_loc=cell.coordinate
+                stop_offset=ws[stop_loc].offset(-1,0).coordinate
+    print("Stop location:"+stop_loc+"\n")
+    print("Stop Offset:"+stop_offset+"\n")
+
+
+
     # CREATE EXCEL: document to place extracted data into
-    create_wb=openpyxl.Workbook()
+    new_wb=openpyxl.Workbook()
     
+    # CREATE SHEET: create workbook sheet
+    ws2=new_wb.create_sheet("Database",0)
+
+    counter=1
+    # PULL RANGE: pull Bid Division
+    division_cell_range=ws[start_offset:stop_offset]
+    for cell, in division_cell_range:
+        division=cell.value
+        print(division)
+        ws2.cell(row=counter,column=2,value=division)
+        counter+=1
+            
+    #PULL RANGE: pull bid package description     
+        counter=1
+    bid_package_start=ws[start_offset].offset(0,1).coordinate
+    bid_package_stop=ws[stop_offset].offset(0,1).coordinate
+    bid_package_cell_range=ws[bid_package_start:bid_package_stop]
+    for cell, in bid_package_cell_range:
+        bid_package=cell.value
+        print(bid_package)
+        ws2.cell(row=counter,column=3,value=bid_package)
+        counter+=1
+
+    
+    # PULL RANGE: pull bid package totals
+
     # CREATE PATH: path to use for resulting file of program
     gensum_prj_file = prj_folder+ r"\\"+current_time+"__-__gensum.xlsx"
 
     # SAVE EXCEL: save excel file to path location
-    create_wb.save(gensum_prj_file)
+    new_wb.save(gensum_prj_file)
 
-    #Write cell with value of stop at the bottom of the 
-    # Pull project information from top of sheet and 
+
 
     #####ENTER PROJECT INFORMATION INTO BRS WORKSHEET#####
     ws_p_info = wb_brs.worksheets[0]
