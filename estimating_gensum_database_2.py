@@ -107,30 +107,70 @@ def master_program():
     new_wb=openpyxl.Workbook()
     
     # CREATE SHEET: create workbook sheet
-    ws2=new_wb.create_sheet("Database",0)
+    ws2=new_wb.create_sheet("BID_PACKAGES",0)
 
-    counter=1
+    #SET HEADERS: Set headers for each column
+    ws2.cell(row=1,column=1,value="Time Ran")
+    ws2.cell(row=1,column=2,value="Project")
+    ws2.cell(row=1,column=3,value="BP#")
+    ws2.cell(row=1,column=4,value="Bid Package Description")
+    ws2.cell(row=1,column=5,value="Package_Total")
+
+        
+   
+    counter=2
     # PULL RANGE: pull Bid Division
     division_cell_range=ws[start_offset:stop_offset]
     for cell, in division_cell_range:
         division=cell.value
         print(division)
-        ws2.cell(row=counter,column=2,value=division)
+        ws2.cell(row=counter,column=3,value=division)
         counter+=1
             
     #PULL RANGE: pull bid package description     
-        counter=1
+    counter=2
     bid_package_start=ws[start_offset].offset(0,1).coordinate
     bid_package_stop=ws[stop_offset].offset(0,1).coordinate
     bid_package_cell_range=ws[bid_package_start:bid_package_stop]
     for cell, in bid_package_cell_range:
         bid_package=cell.value
         print(bid_package)
-        ws2.cell(row=counter,column=3,value=bid_package)
+        ws2.cell(row=counter,column=4,value=bid_package)
         counter+=1
 
-    
-    # PULL RANGE: pull bid package totals
+
+    #PULL RANGE:  pull total cost column
+    counter=2
+    total_col_start=ws[start_offset].offset(0,2).coordinate
+    total_col_stop=ws[stop_offset].offset(0,2).coordinate
+    total_col_range=ws[total_col_start:total_col_stop]
+    for cell, in total_col_range:
+        tol_value=cell.value
+        print(tol_value)
+        ws2.cell(row=counter,column=5,value=tol_value)
+        counter+=1
+
+
+    #FIND CELL: FIND Project Name Cell, then offset over 1 column to retrieve project name info
+    for row in ws.iter_rows():
+        for cell in row:
+            if cell.value == "Project Name:":
+                prj_n_coord=cell.coordinate
+                print(prj_n_coord)
+                prj_n_value=ws[prj_n_coord].offset(0,1).value
+    print("Project Name is:"+prj_n_value+"\n\n\n")
+
+    #PULL RANGE: Pull project name and apply over every row of bid package length
+    counter=2
+    for x in range(len(total_col_range)):
+        ws2.cell(row=counter,column=2,value=prj_n_value)
+        counter+=1
+
+    #ITTERATE DATE: itterate current time(got earlier) over every row in first column to ref when run
+    counter=2
+    for x in range(len(total_col_range)):
+        ws2.cell(row=counter,column=1,value=current_time)
+        counter+=1
 
     # CREATE PATH: path to use for resulting file of program
     gensum_prj_file = prj_folder+ r"\\"+current_time+"__-__gensum.xlsx"
