@@ -106,17 +106,55 @@ def master_program():
     # CREATE EXCEL: document to place extracted data into
     new_wb=openpyxl.Workbook()
     
-    # CREATE SHEET: create workbook sheet
-    ws2=new_wb.create_sheet("BID_PACKAGES",0)
+    # CREATE SHEETS: create workbook sheets to place data into
+    ws3=new_wb.create_sheet("PROJECT_INFO",0)
+    ws4=new_wb.create_sheet("PROJECT_FINANCIALS",1)
+    ws2=new_wb.create_sheet("BID_PACKAGES",2)
+    
 
     #SET HEADERS: Set headers for each column
     ws2.cell(row=1,column=1,value="Time Ran")
-    ws2.cell(row=1,column=2,value="Project")
-    ws2.cell(row=1,column=3,value="BP#")
-    ws2.cell(row=1,column=4,value="Bid Package Description")
-    ws2.cell(row=1,column=5,value="Package_Total")
+    ws2.cell(row=1,column=2,value="AOP Number")
+    ws2.cell(row=1,column=3,value="Project")
+    ws2.cell(row=1,column=4,value="BP#")
+    ws2.cell(row=1,column=5,value="Bid Package Description")
+    ws2.cell(row=1,column=6,value="Package_Total")
+    ws2.cell(row=1,column=7,value="Subcontractor Carried")
+    
+    ws3.cell(row=1,column=1,value="Time Ran")
+    ws3.cell(row=1,column=2,value="Project Name")
+    ws3.cell(row=1,column=3,value="Address")
+    ws3.cell(row=1,column=4,value="Sector")
+    ws3.cell(row=1,column=5,value="CRM Category")
+    ws3.cell(row=1,column=6,value="Private/Public")
+    ws3.cell(row=1,column=7,value="Proposal Type")
+    ws3.cell(row=1,column=8,value="Client")
+    ws3.cell(row=1,column=9,value="Architect")
+    ws3.cell(row=1,column=10,value="City")
+    ws3.cell(row=1,column=11,value="State")
+    ws3.cell(row=1,column=12,value="Est Project #")
+    ws3.cell(row=1,column=14,value="AOP Number")
 
-        
+    ws4.cell(row=1,column=1,value="Time Ran")
+    ws4.cell(row=1,column=2,value="AOP Number")
+    ws4.cell(row=1,column=3,value="Direct Work Total")
+    ws4.cell(row=1,column=4,value="SDI")
+    ws4.cell(row=1,column=5,value="Bond or Corporate Guarantee")
+    ws4.cell(row=1,column=6,value="Insurance(GL & WC)")
+    ws4.cell(row=1,column=7,value="Insurance (OCP&L)")
+    ws4.cell(row=1,column=8,value="Builders Risk")
+    ws4.cell(row=1,column=9,value="General Conditions(W/O insurance)")
+    ws4.cell(row=1,column=10,value="Building Permit")
+    ws4.cell(row=1,column=11,value="Fee")
+    ws4.cell(row=1,column=12,value="Precon")
+    ws4.cell(row=1,column=13,value="Escalation")
+    ws4.cell(row=1,column=14,value="Contigency")
+    ws4.cell(row=1,column=15,value="Additional Contigency")
+    ws4.cell(row=1,column=16,value="Tax")
+    ws4.cell(row=1,column=17,value="Total After Indirect Costs")
+    ws4.cell(row=1,column=18,value="General Add/Deduct")
+    ws4.cell(row=1,column=19,value="Final Total")
+            
    
     counter=2
     # PULL RANGE: pull Bid Division
@@ -124,7 +162,7 @@ def master_program():
     for cell, in division_cell_range:
         division=cell.value
         print(division)
-        ws2.cell(row=counter,column=3,value=division)
+        ws2.cell(row=counter,column=4,value=division)
         counter+=1
             
     #PULL RANGE: pull bid package description     
@@ -135,7 +173,7 @@ def master_program():
     for cell, in bid_package_cell_range:
         bid_package=cell.value
         print(bid_package)
-        ws2.cell(row=counter,column=4,value=bid_package)
+        ws2.cell(row=counter,column=5,value=bid_package)
         counter+=1
 
 
@@ -147,7 +185,37 @@ def master_program():
     for cell, in total_col_range:
         tol_value=cell.value
         print(tol_value)
-        ws2.cell(row=counter,column=5,value=tol_value)
+        ws2.cell(row=counter,column=6,value=tol_value)
+        counter+=1
+
+    #FIND CELL: Find cell with "Subcontractor Carried" in it to set the end of a range to pull data from
+    for row in ws.iter_rows():
+        for cell in row:
+            if cell.value == "Subcontractor Carried":
+                sub_carried_loc=cell.coordinate
+                sub_carried_offset=ws[sub_carried_loc].offset(2,0).coordinate
+    print("Start location:"+sub_carried_loc+"\n")
+    print("Start Offset:"+sub_carried_offset+"\n\n\n")
+    
+    #FIND CELL: Find cell with "STOP 2" in it to set the end of a range to pull data from
+    for row in ws.iter_rows():
+        for cell in row:
+            if cell.value == "STOP_2":
+                stop2_loc=cell.coordinate
+                stop2_offset=ws[stop2_loc].offset(-1,0).coordinate
+    print("Stop location:"+stop2_loc+"\n")
+    print("Stop Offset:"+stop2_offset+"\n\n\n")
+
+
+    #PULL RANGE: Pull subcontractor carried column
+    counter=2
+    #sub_carried_start=ws[start_offset].offset(0,12).coordinate
+    #sub_carried_stop=ws[stop_offset].offset(0,12).coordinate
+    sub_carried_range=ws[sub_carried_offset:stop2_offset]
+    for cell, in sub_carried_range:
+        sub_value=cell.value
+        print(sub_value)
+        ws2.cell(row=counter,column=7,value=sub_value)
         counter+=1
 
 
@@ -158,19 +226,50 @@ def master_program():
                 prj_n_coord=cell.coordinate
                 print(prj_n_coord)
                 prj_n_value=ws[prj_n_coord].offset(0,1).value
+                prj_n_info_coord=ws[prj_n_coord].offset(0,1).coordinate
     print("Project Name is:"+prj_n_value+"\n\n\n")
 
-    #PULL RANGE: Pull project name and apply over every row of bid package length
+    #FIND CELL: AOP number
+    for row in ws.iter_rows():
+        for cell in row:
+            if cell.value == "Aop:":
+                aop_coord=cell.coordinate
+                print(aop_coord)
+                aop_value=ws[aop_coord].offset(0,1).value
+                aop_info_coord=ws[aop_coord].offset(0,1).coordinate
+                print(aop_info_coord)
+
+    #PULL RANGE: Project information
     counter=2
-    for x in range(len(total_col_range)):
-        ws2.cell(row=counter,column=2,value=prj_n_value)
+    prj_info_range=ws[prj_n_info_coord:aop_info_coord]
+    for cell, in prj_info_range:
+        prj_info_value=cell.value
+        print(prj_info_value)
+        ws3.cell(row=2,column=counter,value=prj_info_value)
         counter+=1
+
+    #INSERT DATE: Insert current time into individual worksheets
+    ws3.cell(row=2,column=1,value=current_time)
+    ws4.cell(row=2,column=1,value=current_time)
 
     #ITTERATE DATE: itterate current time(got earlier) over every row in first column to ref when run
     counter=2
     for x in range(len(total_col_range)):
         ws2.cell(row=counter,column=1,value=current_time)
         counter+=1
+
+    #PULL RANGE: Pull project name and apply over every row of bid package length
+    counter=2
+    for x in range(len(total_col_range)):
+        ws2.cell(row=counter,column=3,value=prj_n_value)
+        counter+=1
+
+    #PULL RANGE: Pull aop and apply over every row of bid package length
+    counter=2
+    for x in range(len(total_col_range)):
+        ws2.cell(row=counter,column=2,value=aop_value)
+        counter+=1
+
 
     # CREATE PATH: path to use for resulting file of program
     gensum_prj_file = prj_folder+ r"\\"+current_time+"__-__gensum.xlsx"
@@ -180,42 +279,7 @@ def master_program():
 
 
 
-    #####ENTER PROJECT INFORMATION INTO BRS WORKSHEET#####
-    ws_p_info = wb_brs.worksheets[0]
-    ws_p_info["B2"] = prj_name
-    ws_p_info["B3"] = prj_numb
-    ws_p_info["B4"] = bid_date
-    ws_p_info["B5"] = location
-    ws_p_info["B6"] = t_office
-    ws_p_info["B7"] = client
-    ws_p_info["B8"] = lead_est
 
-    #save brs
-    new_brs = project_setup_directory + r'\new_brs.xlsx'
-    wb_brs.save(new_brs)
-
-
-    #import newly saved excel file with openpyXL for manipulation
-    wb = openpyxl.load_workbook(file_name)
-
-    #test if open py excel has properly imported excel doc
-    try:
-        for sheet in wb:
-            print(sheet.title)
-    except:
-        print("Error when opening workbook with OpenPyXL")
-    else:
-        print("workbook successfully imported with OpenPyXl")
-
-    for x in range(len(df2)):
-        sheet_name = df2.iloc[x,0] +' - '+df2.iloc[x,1]
-        sheet_name_rep = sheet_name.replace('=', '').replace('"','').replace('(','').replace(')','').replace('and','&').replace(',','')
-        wb.create_sheet(sheet_name_rep)
-
-    for sheet in wb:
-        print(sheet.title)
-
-    wb.save(file_name)
 
 
 master_program()
