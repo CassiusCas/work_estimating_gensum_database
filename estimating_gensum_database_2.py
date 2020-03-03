@@ -270,6 +270,164 @@ def master_program():
         ws2.cell(row=counter,column=2,value=aop_value)
         counter+=1
 
+    
+    ## PROJECT FINANCIALS/ INDIRECTS PAGE ##
+    
+    #PULL AOP
+    ws4.cell(row=2,column=2,value=aop_value)
+
+    #FIND CELL: DIRECT WORK
+    for row in ws.iter_rows():
+        for cell in row:
+            if cell.value =="Direct Work Total (NO SDI or Bonds)":
+                dw_coord=cell.coordinate
+                print("Direct Work Found at:  "+dw_coord+"\n\n")
+                dw_value=ws[dw_coord].offset(0,1).value
+                ws4.cell(row=2,column=3,value=dw_value)
+
+    #FIND CELL: SDI
+    for row in ws.iter_rows():
+        for cell in row:
+            if cell.value=="SDI":
+                sdi_coord=cell.coordinate
+                print("SDI Found at:  "+sdi_coord+"\n\n")
+                sdi_value=ws[sdi_coord].offset(0,1).value
+                ws4.cell(row=2,column=4,value=sdi_value)
+
+    #FIND CELL: Bonds or Corporate Guarantee
+    for row in ws.iter_rows():
+        for cell in row:
+            if cell.value=="Bonds or Corporate Guarantee":
+                bcg_coord=cell.coordinate
+                print("Bond and Corp Guarantee found at:  "+bcg_coord+"\n\n")
+                bcg_value=ws[bcg_coord].offset(0,1).value
+                ws4.cell(row=2,column=5,value=bcg_value)
+     
+    #FIND CELL: Insurance GL&WC
+    for row in ws.iter_rows():
+        for cell in row:
+            if cell.value=="Insurance GL and WC":
+                ins_gl_coord=cell.coordinate
+                print("Insurance GL & WC found at:  "+ins_gl_coord+"\n\n")
+                ins_gl_value=ws[ins_gl_coord].offset(0,1).value
+                ws4.cell(row=2,column=6,value=ins_gl_value)
+                                    
+     #FIND CELL: Insurance OCPL
+    for row in ws.iter_rows():
+         for cell in row:
+             if cell.value=="Insurance OCPL":
+                 ins_oc_coord=cell.coordinate
+                 print("Insurance OCPL found at:  "+ins_oc_coord+"\n\n")
+                 ins_oc_value=ws[ins_oc_coord].offset(0,1).value
+                 ws4.cell(row=2,column=7,value=ins_oc_value)
+
+    #FIND CELL: Builders Risk
+    for row in ws.iter_rows():
+        for cell in row:
+            if cell.value=="Builders Risk":
+                br_coord=cell.coordinate
+                print("Builders Risk Found at  "+br_coord+"\n\n")
+                br_value=ws[br_coord].offset(0,1).value
+                ws4.cell(row=2,column=8,value=br_value)
+
+
+    #FIND CELL: General Conditions w/o insurannce
+    for row in ws.iter_rows():
+        for cell in row:
+            if cell.value=="General Conditions (w/o Insurance)":
+                gc_coord=cell.coordinate
+                print("General Conditions (w/o insurance) found at:  "+gc_coord+"\n\n")
+                gc_value=ws[gc_coord].offset(0,1).value
+                ws4.cell(row=2,column=9,value=gc_value)
+
+    #FIND CELL: Building Permit
+    for row in ws.iter_rows():
+        for cell in row:
+            if cell.value=="Building Permit":
+                bp_coord=cell.coordinate
+                print("Building Permit Found at:  "+bp_coord+"\n\n")
+                bp_value=ws[bp_coord].offset(0,1).value
+                ws4.cell(row=2,column=10,value=bp_value)
+    #FIND CELL: FEE
+    for row in ws.iter_rows():
+        for cell in row:
+            if cell.value=="Fee":
+                fee_coord=cell.coordinate
+                print("Fee found at:  "+fee_coord+"\n\n")
+                fee_value=ws[fee_coord].offset(0,1).value
+                ws4.cell(row=2,column=11,value=fee_value)
+
+    #FIND CELL: Precon
+    for row in ws.iter_rows():
+        for cell in row:
+            if cell.value=="Precon":
+                precon_coord=cell.coordinate
+                print("Precon found at:  "+precon_coord+"\n\n")
+                precon_value=ws[precon_coord].offset(0,1).value
+                ws4.cell(row=2,column=12,value=precon_value)
+
+    #FIND CELL: Escalation
+    for row in ws.iter_rows():
+        for cell in row:
+            if cell.value=="Indirect Escalation":
+                escalation_coord=cell.coordinate
+                print("Indirect Escalation found at:  "+escalation_coord+"\n\n")
+                escalation_value=ws[escalation_coord].offset(0,1).value
+                ws4.cell(row=2,column=13,value=escalation_value)
+
+    #FIND CELL: Contigency
+    for row in ws.iter_rows():
+        for cell in row:
+            if cell.value=="Contingency":
+                contingency_coord=cell.coordinate
+                print("Contingency found at:  "+contingency_coord+"\n\n")
+                contingency_value=ws[contingency_coord].offset(0,1).value
+                ws4.cell(row=2,column=14,value=contingency_value)
+
+    #FIND CELL: additional contigency
+    for row in ws.iter_rows():
+        for cell in row:
+            if cell.value=="Additional Contingency":
+                ad_cont_coord=cell.coordinate
+                print("Additional Contingency  found at:  "+ad_cont_coord+"\n\n")
+                ad_cont_value=ws[ad_cont_coord].offset(0,1).value
+                ws4.cell(row=2,column=15,value=ad_cont_value)
+
+    #FIND CELL: TAX
+    for row in ws.iter_rows():
+        for cell in row:
+            if cell.value=="Tax":
+                tax_coord=cell.coordinate
+                print("Tax found at:  "+tax_coord+"\n\n")
+                tax_value=ws[tax_coord].offset(0,1).value
+                ws4.cell(row=2,column=16,value=tax_value)
+
+    #FIND CELL: Total After indirect Costs
+    for row in ws.iter_rows():
+        for cell in row:
+            if cell.value=="Total After Indirect Costs":
+                ta_coord=cell.coordinate
+                print("Total After Indirect Costs found at:  "+ta_coord+"\n\n")
+                ta_value=ws[ta_coord].offset(0,1).value
+                ws4.cell(row=2,column=17,value=ta_value)
+
+    #FIND Cell: General Add/Deduct
+    for row in ws.iter_rows():
+        for cell in row:
+            if cell.value=="General Add/Deduct":
+                gad_coord=cell.coordinate
+                print("General Add/Deduct found at:  "+gad_coord+"\n\n")
+                gad_value=ws[gad_coord].offset(0,1).value
+                ws4.cell(row=2,column=18,value=gad_value)
+
+    #FIND CELL: Final Total
+    for row in ws.iter_rows():
+        for cell in row:
+            if cell.value=="FINAL TOTAL":
+                ft_coord=cell.coordinate
+                print("Final Total found at:  "+ft_coord+"\n\n")
+                ft_value=ws[ft_coord].offset(0,1).value
+                ws4.cell(row=2,column=19,value=ft_value)
 
     # CREATE PATH: path to use for resulting file of program
     gensum_prj_file = prj_folder+ r"\\"+current_time+"__-__gensum.xlsx"
