@@ -133,7 +133,9 @@ def master_program():
     ws3.cell(row=1,column=10,value="City")
     ws3.cell(row=1,column=11,value="State")
     ws3.cell(row=1,column=12,value="Est Project #")
+    ws3.cell(row=1,column=13,value="Estimate Date")
     ws3.cell(row=1,column=14,value="AOP Number")
+    ws3.cell(row=1,column=15,value="Total SQ FT")
 
     ws4.cell(row=1,column=1,value="Time Ran")
     ws4.cell(row=1,column=2,value="AOP Number")
@@ -247,6 +249,15 @@ def master_program():
         print(prj_info_value)
         ws3.cell(row=2,column=counter,value=prj_info_value)
         counter+=1
+
+    #FIND GSF:
+    for row in ws.iter_rows():
+        for cell in row:
+            if cell.value=="Total SQ FT":
+                sf_coord=cell.coordinate
+                print("Total SQ Ft Found at:  "+sf_coord+"\n\n")
+                sf_value=ws[sf_coord].offset(0,1).value
+                ws3.cell(row=2,column=15,value=sf_value)
 
     #INSERT DATE: Insert current time into individual worksheets
     ws3.cell(row=2,column=1,value=current_time)
