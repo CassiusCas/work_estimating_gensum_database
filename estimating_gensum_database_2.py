@@ -120,6 +120,7 @@ def master_program():
     ws2.cell(row=1,column=5,value="Bid Package Description")
     ws2.cell(row=1,column=6,value="Package_Total")
     ws2.cell(row=1,column=7,value="Subcontractor Carried")
+    ws2.cell(row=1,column=8,value="Cost Per Square Foot")
     
     ws3.cell(row=1,column=1,value="Time Ran")
     ws3.cell(row=1,column=2,value="Project Name")
@@ -138,24 +139,31 @@ def master_program():
     ws3.cell(row=1,column=15,value="Total SQ FT")
 
     ws4.cell(row=1,column=1,value="Time Ran")
-    ws4.cell(row=1,column=2,value="AOP Number")
-    ws4.cell(row=1,column=3,value="Direct Work Total")
-    ws4.cell(row=1,column=4,value="SDI")
-    ws4.cell(row=1,column=5,value="Bond or Corporate Guarantee")
-    ws4.cell(row=1,column=6,value="Insurance(GL & WC)")
-    ws4.cell(row=1,column=7,value="Insurance (OCP&L)")
-    ws4.cell(row=1,column=8,value="Builders Risk")
-    ws4.cell(row=1,column=9,value="General Conditions(W/O insurance)")
-    ws4.cell(row=1,column=10,value="Building Permit")
-    ws4.cell(row=1,column=11,value="Fee")
-    ws4.cell(row=1,column=12,value="Precon")
-    ws4.cell(row=1,column=13,value="Escalation")
-    ws4.cell(row=1,column=14,value="Contigency")
-    ws4.cell(row=1,column=15,value="Additional Contigency")
-    ws4.cell(row=1,column=16,value="Tax")
-    ws4.cell(row=1,column=17,value="Total After Indirect Costs")
-    ws4.cell(row=1,column=18,value="General Add/Deduct")
-    ws4.cell(row=1,column=19,value="Final Total")
+    ws4.cell(row=1,column=2,value="Indirect Line Item")
+    ws4.cell(row=1,column=3,value="Indirect Totals")
+    ws4.cell(row=1,column=4,value="Percentage Applied")
+    ws4.cell(row=1,column=5,value="Cost Per Sq Ft")
+    ws4.cell(row=1,column=6,value="Project Name")
+    ws4.cell(row=1,column=7,value="AOP")
+
+    #SET ROWS: indirect Line Item Rows
+    ws4.cell(row=2,column=2,value="Direct Work Total")
+    ws4.cell(row=3,column=2,value="SDI")
+    ws4.cell(row=4,column=2,value="Bond or Corporate Guarantee")
+    ws4.cell(row=5,column=2,value="Insurance(GL & WC)")
+    ws4.cell(row=6,column=2,value="Insurance (OCP&L)")
+    ws4.cell(row=7,column=2,value="Builders Risk")
+    ws4.cell(row=8,column=2,value="General Conditions(W/O insurance)")
+    ws4.cell(row=9,column=2,value="Building Permit")
+    ws4.cell(row=10,column=2,value="Fee")
+    ws4.cell(row=11,column=2,value="Precon")
+    ws4.cell(row=12,column=2,value="Escalation")
+    ws4.cell(row=13,column=2,value="Contigency")
+    ws4.cell(row=14,column=2,value="Additional Contigency")
+    ws4.cell(row=15,column=2,value="Tax")
+    ws4.cell(row=16,column=2,value="Total After Indirect Costs")
+    ws4.cell(row=17,column=2,value="General Add/Deduct")
+    ws4.cell(row=18 ,column=2,value="Final Total")
             
    
     counter=2
@@ -211,8 +219,6 @@ def master_program():
 
     #PULL RANGE: Pull subcontractor carried column
     counter=2
-    #sub_carried_start=ws[start_offset].offset(0,12).coordinate
-    #sub_carried_stop=ws[stop_offset].offset(0,12).coordinate
     sub_carried_range=ws[sub_carried_offset:stop2_offset]
     for cell, in sub_carried_range:
         sub_value=cell.value
@@ -220,7 +226,30 @@ def master_program():
         ws2.cell(row=counter,column=7,value=sub_value)
         counter+=1
 
+    #FIND CELL: indirect cost per sq ft column
+    for row in ws.iter_rows():
+        for cell in row:
+            if cell.value =="direct cost per sq ft":
+                coordinate=cell.coordinate
+                print("Direct Cost Per Sq Ft found at:  "+coordinate+"\n\n")
+                idcsf_loc=ws[coordinate].offset(2,0).coordinate
 
+    #FIND CELL: STOP_3
+    for row in ws.iter_rows():
+        for cell in row:
+            if cell.value=="STOP_3":
+                coordinate=cell.coordinate
+                print("STOP_3 found at:  "+coordinate+"\n\n")
+                stop_3_loc=ws[coordinate].offset(-1,0).coordinate
+
+    #PULL RANGE & ITTERATE: inderect cost per sq ft column
+    x=2
+    idcsf_range=ws[idcsf_loc:stop_3_loc]
+    for cell, in idcsf_range:
+        idcsf_value=cell.value
+        print(idcsf_value)
+        ws2.cell(row=x,column=8,value=idcsf_value)
+        x+=1
     #FIND CELL: FIND Project Name Cell, then offset over 1 column to retrieve project name info
     for row in ws.iter_rows():
         for cell in row:
@@ -261,32 +290,52 @@ def master_program():
 
     #INSERT DATE: Insert current time into individual worksheets
     ws3.cell(row=2,column=1,value=current_time)
-    ws4.cell(row=2,column=1,value=current_time)
 
     #ITTERATE DATE: itterate current time(got earlier) over every row in first column to ref when run
     counter=2
     for x in range(len(total_col_range)):
         ws2.cell(row=counter,column=1,value=current_time)
         counter+=1
+    
+    #ITTERATE DATE:  over indirect worksheet
+    x=1
+    y=2
+    while x<18:
+        ws4.cell(row=y,column=1,value=current_time)
+        x+=1
+        y+=1
+            
 
     #PULL RANGE: Pull project name and apply over every row of bid package length
     counter=2
     for x in range(len(total_col_range)):
         ws2.cell(row=counter,column=3,value=prj_n_value)
         counter+=1
-
+    
+    #ITTERATE PROJECT NAME: Project name over every row of Project financials page
+    l=2
+    x=2
+    while l<19:
+        ws4.cell(row=x,column=6,value=prj_n_value)
+        x+=1
+        l+=1
+        
     #PULL RANGE: Pull aop and apply over every row of bid package length
     counter=2
     for x in range(len(total_col_range)):
         ws2.cell(row=counter,column=2,value=aop_value)
         counter+=1
 
-    
+    #ITTERATE AOP: over every row of project financials page
+    l=2
+    x=2
+    while l<19:
+        ws4.cell(row=x,column=7,value=aop_value)
+        x+=1
+        l+=1
     ## PROJECT FINANCIALS/ INDIRECTS PAGE ##
-    
-    #PULL AOP
-    ws4.cell(row=2,column=2,value=aop_value)
-
+   
+    row_set=2
     #FIND CELL: DIRECT WORK
     for row in ws.iter_rows():
         for cell in row:
@@ -294,8 +343,15 @@ def master_program():
                 dw_coord=cell.coordinate
                 print("Direct Work Found at:  "+dw_coord+"\n\n")
                 dw_value=ws[dw_coord].offset(0,1).value
-                ws4.cell(row=2,column=3,value=dw_value)
+                ws4.cell(row=row_set,column=3,value=dw_value)
+                #Percentage Applied
+                dw_value=ws[dw_coord].offset(0,2).value
+                ws4.cell(row=row_set,column=4,value=dw_value)
+                #Cost Per SQ Ft
+                dw_value=ws[dw_coord].offset(0,3).value
+                ws4.cell(row=row_set,column=5,value=dw_value)
 
+    row_set+=1
     #FIND CELL: SDI
     for row in ws.iter_rows():
         for cell in row:
@@ -303,8 +359,15 @@ def master_program():
                 sdi_coord=cell.coordinate
                 print("SDI Found at:  "+sdi_coord+"\n\n")
                 sdi_value=ws[sdi_coord].offset(0,1).value
-                ws4.cell(row=2,column=4,value=sdi_value)
+                ws4.cell(row=row_set,column=3,value=sdi_value)
+                #Percentage Applied
+                sdi_value=ws[sdi_coord].offset(0,2).value
+                ws4.cell(row=row_set,column=4,value=sdi_value)
+                #Cost Per SQ Ft
+                sdi_value=ws[sdi_coord].offset(0,3).value
+                ws4.cell(row=row_set,column=5,value=sdi_value)
 
+    row_set+=1
     #FIND CELL: Bonds or Corporate Guarantee
     for row in ws.iter_rows():
         for cell in row:
@@ -312,134 +375,245 @@ def master_program():
                 bcg_coord=cell.coordinate
                 print("Bond and Corp Guarantee found at:  "+bcg_coord+"\n\n")
                 bcg_value=ws[bcg_coord].offset(0,1).value
-                ws4.cell(row=2,column=5,value=bcg_value)
-     
+                ws4.cell(row=row_set,column=3,value=bcg_value)
+                #Percentage Applied
+                bcg_value=ws[bcg_coord].offset(0,2).value
+                ws4.cell(row=row_set,column=4,value=bcg_value)
+                #Cost per Sq ft
+                bcg_value=ws[bcg_coord].offset(0,3).value
+                ws4.cell(row=row_set,column=5,value=bcg_value)
+    
+    row_set+=1
     #FIND CELL: Insurance GL&WC
     for row in ws.iter_rows():
         for cell in row:
             if cell.value=="Insurance GL and WC":
                 ins_gl_coord=cell.coordinate
                 print("Insurance GL & WC found at:  "+ins_gl_coord+"\n\n")
-                ins_gl_value=ws[ins_gl_coord].offset(0,1).value
-                ws4.cell(row=2,column=6,value=ins_gl_value)
-                                    
-     #FIND CELL: Insurance OCPL
+                counter_loop=1
+                x=1
+                y=3
+                while counter_loop<4:
+                    ins_gl_value=ws[ins_gl_coord].offset(0,x).value
+                    print(ins_gl_value)
+                    ws4.cell(row=row_set,column=y,value=ins_gl_value)
+                    x+=1
+                    y+=1
+                    counter_loop+=1
+
+    row_set+=1                               
+    #FIND CELL: Insurance OCPL
     for row in ws.iter_rows():
          for cell in row:
              if cell.value=="Insurance OCPL":
                  ins_oc_coord=cell.coordinate
                  print("Insurance OCPL found at:  "+ins_oc_coord+"\n\n")
-                 ins_oc_value=ws[ins_oc_coord].offset(0,1).value
-                 ws4.cell(row=2,column=7,value=ins_oc_value)
-
+                 counter_loop=1
+                 x=1
+                 y=3
+                 while counter_loop<4:
+                     ins_oc_value=ws[ins_oc_coord].offset(0,x).value
+                     ws4.cell(row=row_set,column=y,value=ins_oc_value)
+                     x+=1
+                     y+=1
+                     counter_loop+=1
+    row_set+=1
     #FIND CELL: Builders Risk
     for row in ws.iter_rows():
         for cell in row:
             if cell.value=="Builders Risk":
                 br_coord=cell.coordinate
                 print("Builders Risk Found at  "+br_coord+"\n\n")
-                br_value=ws[br_coord].offset(0,1).value
-                ws4.cell(row=2,column=8,value=br_value)
+                counter_loop=1
+                x=1
+                y=3
+                while counter_loop<4:
+                    br_value=ws[br_coord].offset(0,x).value
+                    ws4.cell(row=row_set,column=y,value=br_value)
+                    x+=1
+                    y+=1
+                    counter_loop+=1
 
-
+    row_set+=1
     #FIND CELL: General Conditions w/o insurannce
     for row in ws.iter_rows():
         for cell in row:
             if cell.value=="General Conditions (w/o Insurance)":
                 gc_coord=cell.coordinate
                 print("General Conditions (w/o insurance) found at:  "+gc_coord+"\n\n")
-                gc_value=ws[gc_coord].offset(0,1).value
-                ws4.cell(row=2,column=9,value=gc_value)
-
+                counter_loop=1
+                x=1
+                y=3
+                while counter_loop<4:
+                    gc_value=ws[gc_coord].offset(0,x).value
+                    ws4.cell(row=row_set,column=y,value=gc_value)
+                    x+=1
+                    y+=1
+                    counter_loop+=1
+    row_set+=1
     #FIND CELL: Building Permit
     for row in ws.iter_rows():
         for cell in row:
             if cell.value=="Building Permit":
                 bp_coord=cell.coordinate
                 print("Building Permit Found at:  "+bp_coord+"\n\n")
-                bp_value=ws[bp_coord].offset(0,1).value
-                ws4.cell(row=2,column=10,value=bp_value)
+                cl=1
+                x=1
+                y=3
+                while cl<4:
+                    bp_value=ws[bp_coord].offset(0,x).value
+                    ws4.cell(row=row_set,column=y,value=bp_value)
+                    x+=1
+                    y+=1
+                    cl+=1
+    row_set+=1
     #FIND CELL: FEE
     for row in ws.iter_rows():
         for cell in row:
             if cell.value=="Fee":
                 fee_coord=cell.coordinate
                 print("Fee found at:  "+fee_coord+"\n\n")
-                fee_value=ws[fee_coord].offset(0,1).value
-                ws4.cell(row=2,column=11,value=fee_value)
-
+                l=1
+                x=1
+                y=3
+                while l<4:
+                    fee_value=ws[fee_coord].offset(0,x).value
+                    ws4.cell(row=row_set,column=y,value=fee_value)
+                    x+=1
+                    y+=1
+                    l+=1
+    row_set+=1
     #FIND CELL: Precon
     for row in ws.iter_rows():
         for cell in row:
             if cell.value=="Precon":
                 precon_coord=cell.coordinate
                 print("Precon found at:  "+precon_coord+"\n\n")
-                precon_value=ws[precon_coord].offset(0,1).value
-                ws4.cell(row=2,column=12,value=precon_value)
-
+                x=1
+                y=3
+                l=1
+                while l<4:
+                    precon_value=ws[precon_coord].offset(0,x).value
+                    ws4.cell(row=row_set,column=y,value=precon_value)
+                    x+=1
+                    y+=1
+                    l+=1
+    row_set+=1                    
     #FIND CELL: Escalation
     for row in ws.iter_rows():
         for cell in row:
             if cell.value=="Indirect Escalation":
                 escalation_coord=cell.coordinate
                 print("Indirect Escalation found at:  "+escalation_coord+"\n\n")
-                escalation_value=ws[escalation_coord].offset(0,1).value
-                ws4.cell(row=2,column=13,value=escalation_value)
-
+                l=1
+                x=1
+                y=3
+                while l<4:
+                    escalation_value=ws[escalation_coord].offset(0,x).value
+                    ws4.cell(row=row_set,column=y,value=escalation_value)
+                    x+=1
+                    y+=1
+                    l+=1
+    row_set+=1
     #FIND CELL: Contigency
     for row in ws.iter_rows():
         for cell in row:
             if cell.value=="Contingency":
                 contingency_coord=cell.coordinate
                 print("Contingency found at:  "+contingency_coord+"\n\n")
-                contingency_value=ws[contingency_coord].offset(0,1).value
-                ws4.cell(row=2,column=14,value=contingency_value)
-
+                l=1
+                x=1
+                y=3
+                while l<4:
+                    contingency_value=ws[contingency_coord].offset(0,x).value
+                    ws4.cell(row=row_set,column=y,value=contingency_value)
+                    x+=1
+                    y+=1
+                    l+=1
+    row_set+=1
     #FIND CELL: additional contigency
     for row in ws.iter_rows():
         for cell in row:
             if cell.value=="Additional Contingency":
                 ad_cont_coord=cell.coordinate
                 print("Additional Contingency  found at:  "+ad_cont_coord+"\n\n")
-                ad_cont_value=ws[ad_cont_coord].offset(0,1).value
-                ws4.cell(row=2,column=15,value=ad_cont_value)
-
+                l=1
+                y=3
+                x=1
+                while l<4:
+                    ad_cont_value=ws[ad_cont_coord].offset(0,x).value
+                    ws4.cell(row=row_set,column=y,value=ad_cont_value)
+                    l+=1
+                    y+=1
+                    x+=1
+    row_set+=1
     #FIND CELL: TAX
     for row in ws.iter_rows():
         for cell in row:
             if cell.value=="Tax":
                 tax_coord=cell.coordinate
                 print("Tax found at:  "+tax_coord+"\n\n")
-                tax_value=ws[tax_coord].offset(0,1).value
-                ws4.cell(row=2,column=16,value=tax_value)
-
+                l=1
+                y=3
+                x=1
+                while l<4:
+                    tax_value=ws[tax_coord].offset(0,x).value
+                    ws4.cell(row=row_set,column=y,value=tax_value)
+                    l+=1
+                    y+=1
+                    x+=1
+    row_set+=1
     #FIND CELL: Total After indirect Costs
     for row in ws.iter_rows():
         for cell in row:
             if cell.value=="Total After Indirect Costs":
                 ta_coord=cell.coordinate
                 print("Total After Indirect Costs found at:  "+ta_coord+"\n\n")
-                ta_value=ws[ta_coord].offset(0,1).value
-                ws4.cell(row=2,column=17,value=ta_value)
-
+                l=1
+                y=3
+                x=1
+                while l<4:
+                    ta_value=ws[ta_coord].offset(0,x).value
+                    ws4.cell(row=row_set,column=y,value=ta_value)
+                    l+=1
+                    y+=1
+                    x+=1
+                
+    row_set+=1
     #FIND Cell: General Add/Deduct
     for row in ws.iter_rows():
         for cell in row:
             if cell.value=="General Add/Deduct":
                 gad_coord=cell.coordinate
                 print("General Add/Deduct found at:  "+gad_coord+"\n\n")
-                gad_value=ws[gad_coord].offset(0,1).value
-                ws4.cell(row=2,column=18,value=gad_value)
-
+                l=1
+                y=3
+                x=1
+                while l<4:
+                    gad_value=ws[gad_coord].offset(0,x).value
+                    ws4.cell(row=row_set,column=y,value=gad_value)
+                    l+=1
+                    y+=1
+                    x+=1
+    row_set+=1
     #FIND CELL: Final Total
     for row in ws.iter_rows():
         for cell in row:
             if cell.value=="FINAL TOTAL":
                 ft_coord=cell.coordinate
                 print("Final Total found at:  "+ft_coord+"\n\n")
-                ft_value=ws[ft_coord].offset(0,1).value
-                ws4.cell(row=2,column=19,value=ft_value)
+                l=1
+                y=3
+                x=1
+                while l<4:
+                    ft_value=ws[ft_coord].offset(0,x).value
+                    ws4.cell(row=row_set,column=y,value=ft_value)
+                    x+=1
+                    y+=1
+                    l+=1
 
+
+    
     # CREATE PATH: path to use for resulting file of program
     gensum_prj_file = prj_folder+ r"\\"+current_time+"__-__gensum.xlsx"
 
